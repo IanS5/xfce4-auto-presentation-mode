@@ -1,22 +1,29 @@
 #!/usr/bin/sh
 set -e
 
+SELF="$0"
 SCREENSAVER_ENABLED=0
+
+log() {
+  echo "$SELF: $1"
+}
 
 xfce_update_presentation_mode() {
   prop='/xfce4-power-manager/presentation-mode'
   channel='xfce4-power-manager'
 
   if [ "$SCREENSAVER_ENABLED" -eq 0 ]; then
+    log "$prop = false"
     xfconf-query -c "$channel" -p "$prop" -s 'false'
   else
+    log "$prop = true"
     xfconf-query -c "$channel" -p "$prop" -s 'true'
   fi
 }
 
 screensaver() {
   if [ "$1" != "0" ] && [ "$1" != "1" ]; then
-    echo "$0: screensaver(): Bad argument. Expected '0' or '1'; got '$1'."
+    log "screensaver(): Bad argument. Expected '0' or '1'; got '$1'."
     return 1
   fi
 
@@ -51,13 +58,13 @@ watch_window() {
 
 while true; do
   id="$(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x[0-9A-Fa-f]*' | head -n -1)"
-  if [ -z "$id" ] || [ "$id" == "0x0" ]; then
-    echo "$0: active window is null"
+  if [ -z "$id" ] || [ "$id" = "0x0" ]; then
+    log "active window is null"
     await_root_property_change _NET_ACTIVE_WINDOW
-    echo "$0: active window changed, retrying..."
+    log "active window changed, retrying..."
     continue
   fi
 
-  echo "$0: watching window #$id"
+  log "watching window #$id"
   watch_window "$id"
 done
