@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/sh
 set -e
 
 SCREENSAVER_ENABLED=0
