@@ -1,5 +1,4 @@
 #!/usr/bin/sh
-set -e
 
 SELF="$0"
 SCREENSAVER_ENABLED=0
@@ -53,13 +52,11 @@ watch_window() {
         *_NET_WM_STATE_FULLSCREEN*) is_fullscreen=1 ;;
       esac
 
-      if [ "$is_focused" -eq 0 ]; then
+      if [ "$is_focused" -ne 1 ]; then
         # if the window is no longer focused kill xprop to stop watching it
         xprop_pid="$(pgrep -P $$ xprop)"
         [ -n "$xprop_pid" ] && kill "$xprop_pid"
-      fi
-
-      if [ "$is_focused" -eq 1 ] && [ "$is_fullscreen" -eq 1 ]; then
+      elif [ "$is_fullscreen" -eq 1 ]; then
         screensaver 1
       else
         screensaver 0
