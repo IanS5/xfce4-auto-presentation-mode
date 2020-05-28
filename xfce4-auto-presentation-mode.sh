@@ -42,13 +42,24 @@ await_root_property_change() {
 watch_window() {
   xprop -spy -id "$id" _NET_WM_STATE |
     while read state; do
-      if echo "$state" | grep -vq _NET_WM_STATE_FOCUSED; then
+      is_focused=0
+      is_fullscreen=0
+
+      case "$state" in
+        *_NET_WM_STATE_FOCUSED*) is_focused=1 ;;
+      esac
+
+      case "$state" in
+        *_NET_WM_STATE_FULLSCREEN*) is_fullscreen=1 ;;
+      esac
+
+      if [ "$is_focused" -eq 0 ]; then
         # if the window is no longer focused kill xprop to stop watching it
         xprop_pid="$(pgrep -P $$ xprop)"
         [ -n "$xprop_pid" ] && kill "$xprop_pid"
       fi
 
-      if echo "$state" | grep -q _NET_WM_STATE_FULLSCREEN; then
+      if [ "$is_focused" -eq 1 ] && [ "$is_fullscreen" -eq 1 ]; then
         screensaver 1
       else
         screensaver 0
