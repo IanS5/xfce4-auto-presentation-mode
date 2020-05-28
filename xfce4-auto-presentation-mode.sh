@@ -42,10 +42,10 @@ await_root_property_change() {
 watch_window() {
   xprop -spy -id "$id" _NET_WM_STATE |
     while read state; do
-      xprop_pid="$(pgrep -P $$ xprop)"
-
-      if [ -n "$xprop_pid" ] && echo "$state" | grep -vq _NET_WM_STATE_FOCUSED; then
-        kill "$xprop_pid"
+      if echo "$state" | grep -vq _NET_WM_STATE_FOCUSED; then
+        # if the window is no longer focused kill xprop to stop watching it
+        xprop_pid="$(pgrep -P $$ xprop)"
+        [ -n "$xprop_pid" ] && kill "$xprop_pid"
       fi
 
       if echo "$state" | grep -q _NET_WM_STATE_FULLSCREEN; then
