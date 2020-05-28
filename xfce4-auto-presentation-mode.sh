@@ -44,7 +44,7 @@ watch_window() {
     while read state; do
       xprop_pid="$(pgrep -P $$ xprop)"
 
-      if echo "$state" | grep -vq _NET_WM_STATE_FOCUSED; then
+      if [ -n "$xprop_pid" ] && echo "$state" | grep -vq _NET_WM_STATE_FOCUSED; then
         kill "$xprop_pid"
       fi
 
