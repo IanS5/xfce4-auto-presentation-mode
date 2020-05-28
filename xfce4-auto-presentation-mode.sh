@@ -27,7 +27,7 @@ screensaver() {
     return 1
   fi
 
-  if [ $SCREENSAVER_ENABLED -ne $1 ]; then
+  if [ "$SCREENSAVER_ENABLED" -ne "$1" ]; then
     SCREENSAVER_ENABLED=$1
     xfce_update_presentation_mode
   fi
@@ -41,7 +41,7 @@ await_root_property_change() {
 
 watch_window() {
   xprop -spy -id "$id" _NET_WM_STATE |
-    while read state; do
+    while read -r state; do
       is_focused=0
       is_fullscreen=0
 
